@@ -75,8 +75,6 @@ if [[ $* == *--install-cuda* ]] ; then
 fi # --install-cuda
 export PATH=/usr/local/cuda-11.3/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda-11.3/lib64:$LD_LIBRARY_PATH
-export CUDA_HOME=/usr/local/cuda-11.3
-export CUDA_INSTALL_DIR=/usr/local/cuda-11.3
 
 if [[ $* == *--build-dependencies* ]]; then
   highlight "Installing OpenCV ..."
@@ -196,7 +194,7 @@ conda activate dsp-slam
 highlight "Installing mmdetection and mmdetection3d ..."
 pip install pycocotools==2.0.1
 pip install mmcv-full==1.4.0 -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10.0/index.html
-pip install mmdet==2.14.cudatoolkit
+pip install mmdet==2.14.0
 pip install mmsegmentation==0.14.1
 cd Thirdparty
 git_clone "git clone https://github.com/JingwenWang95/mmdetection3d.git"
