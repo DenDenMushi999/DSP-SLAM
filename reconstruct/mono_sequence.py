@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
+from pathlib import Path
 
 import numpy as np
 import os
@@ -22,6 +23,10 @@ import torch
 from reconstruct.loss_utils import get_rays, get_time
 from reconstruct.utils import ForceKeyErrorDict
 from reconstruct import get_detectors
+
+
+def create_dir(path):
+    Path(path).mkdir(parents=True, exist_ok=True)
 
 
 class Frame:
@@ -96,6 +101,10 @@ class Frame:
         mask_max = masks_2d[max_id, ...].astype(np.float32) * 255.
         bbox_max = bboxes_2d[max_id, ...]
 
+        # cv2.imshow('detection mask', mask_max)
+        create_dir(f'map/lab_cars/11/masks')
+        cv2.imwrite(f'map/lab_cars/11/masks/' + '{:06d}_mask'.format(self.frame_id) + '.png', mask_max)
+
         non_surface_pixels = self.pixels_sampler(bbox_max, mask_max.astype(np.bool8))
 
         if non_surface_pixels.shape[0] > 200:
@@ -151,4 +160,3 @@ class MonoSequence:
         self.current_frame.get_detections()
         self.detections_in_current_frame = self.current_frame.instances
         return self.detections_in_current_frame
-

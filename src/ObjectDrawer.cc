@@ -84,7 +84,7 @@ void ObjectDrawer::DrawObjects(bool bFollow, const Eigen::Matrix4f &Tec)
         {
             mpRenderer->Render(idx, Tec * SE3TcwFollow * Sim3Two, mvObjectColors[pMO->GetRenderId() % mvObjectColors.size()]);
         }
-        // DrawCuboid(pMO);
+        DrawCuboid(pMO);
     }
 }
 
@@ -144,6 +144,24 @@ void ObjectDrawer::DrawCuboid(MapObject *pMO)
     glVertex3f(w,-h,-l);
     glVertex3f(w,-h,l);
 
+    glEnd();
+
+    glColor3f(1.0f,0.0f,0.0f);
+    glBegin(GL_LINES);
+    glVertex3f(0,0,0);
+    glVertex3f(w,0,0);
+    glEnd();
+
+    glColor3f(0.0f,1.0f,0.0f);
+    glBegin(GL_LINES);
+    glVertex3f(0,0,0);
+    glVertex3f(0,h,0);
+    glEnd();
+
+    glColor3f(0.0f,0.0f,1.0f);
+    glBegin(GL_LINES);
+    glVertex3f(0,0,0);
+    glVertex3f(0,0,l);
     glEnd();
 
     glPopMatrix();
