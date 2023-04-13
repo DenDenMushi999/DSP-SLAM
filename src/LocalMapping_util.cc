@@ -281,14 +281,17 @@ void LocalMapping::ProcessDetectedObjects()
         int numKFsPassedSinceInit = int(mpCurrentKeyFrame->mnId - pMO->mpRefKF->mnId);
 
         if (numKFsPassedSinceInit < 50)
-            pMO->ComputeCuboidPCA(numKFsPassedSinceInit < 15);
+            // pMO->ComputeCuboidPCA(numKFsPassedSinceInit < 15);
+            pMO->ComputeCuboidPCA(numKFsPassedSinceInit < 50);
         else  // when we have relative good object shape
             pMO->RemoveOutliersModel();
         // only begin to reconstruct the object if it is observed for enough amoubt of time (15 KFs)
-        if(numKFsPassedSinceInit < 15)
+        // if(numKFsPassedSinceInit < 15)
+        if(numKFsPassedSinceInit < 50)
             continue;
 
-        if ((numKFsPassedSinceInit - 15) % 5 != 0)
+        // if ((numKFsPassedSinceInit - 15) % 5 != 0)
+        if ((numKFsPassedSinceInit - 50) % 5 != 0)
             continue;
 
 //        int numKFsPassedSinceLastRecon = int(mpCurrentKeyFrame->mnId) - nLastReconKFID;
