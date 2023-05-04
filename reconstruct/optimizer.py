@@ -86,6 +86,7 @@ class Optimizer(object):
         return t_cam_obj
 
     def reconstruct_object(self, t_cam_obj, pts, rays, depth, code=None):
+
         """
         :param t_cam_obj: object pose, object-to-camera transformation
         :param pts: surface points, under camera coordinate (M, 3)
@@ -111,6 +112,15 @@ class Optimizer(object):
         depth_obs = np.concatenate([depth, np.zeros(n_background_rays)], axis=0).astype(np.float32)
         depth_obs = torch.from_numpy(depth_obs).cuda()
         # surface points within Omega_s
+        
+        ###
+        import matplotlib.pyplot as plt
+        ax = plt.figure().add_subplot(projection='3d')
+        ax.scatter(pts[:,0], pts[:,1], pts[:,2])
+        np.save('pt_cloud.npy', pts)
+        plt.savefig('point_cloud.png')
+
+        ###
         pts_surface = torch.from_numpy(pts).cuda()
 
         start = get_time()
@@ -134,6 +144,8 @@ class Optimizer(object):
             robust_res_sdf, sdf_loss, _ = get_robust_res(res_sdf, self.b2)
             if math.isnan(sdf_loss):
                 return ForceKeyErrorDict(t_cam_obj=None, code=None, is_good=False, loss=loss)
+            print(f"Iteration {e} of object reconstruction:")
+            print(f"SDF loss: {sdf_loss}")
 
             # 2. Compute Render (2D) Loss
             render_rst = compute_render_loss(self.decoder, ray_directions, depth_obs, t_obj_cam,
@@ -148,6 +160,7 @@ class Optimizer(object):
             robust_res_render, render_loss, _ = get_robust_res(res_render, self.b1)
             if math.isnan(render_loss):
                 return ForceKeyErrorDict(t_cam_obj=None, code=None, is_good=False, loss=loss)
+            print(f"render loss: {sdf_loss}")
 
             # 3. Rotation prior
             drot_dsim3, res_rot = compute_rotation_loss_sim3(t_obj_cam)
