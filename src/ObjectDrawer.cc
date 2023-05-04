@@ -146,18 +146,23 @@ void ObjectDrawer::DrawCuboid(MapObject *pMO)
 
     glEnd();
 
+    // X-axis
+    glLineWidth(mCuboidLineWidth*2);
     glColor3f(1.0f,0.0f,0.0f);
     glBegin(GL_LINES);
     glVertex3f(0,0,0);
     glVertex3f(w,0,0);
     glEnd();
 
+    // Y-axis
+    glLineWidth(mCuboidLineWidth);
     glColor3f(0.0f,1.0f,0.0f);
     glBegin(GL_LINES);
     glVertex3f(0,0,0);
     glVertex3f(0,h,0);
     glEnd();
 
+    // Z-axis
     glColor3f(0.0f,0.0f,1.0f);
     glBegin(GL_LINES);
     glVertex3f(0,0,0);

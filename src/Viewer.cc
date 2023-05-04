@@ -37,8 +37,10 @@ Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer
         fps=30;
     mT = 1e3/fps;
 
-    mImageWidth = fSettings["Camera.width"];
-    mImageHeight = fSettings["Camera.height"];
+    // mImageWidth = fSettings["Camera.width"];
+    // mImageHeight = fSettings["Camera.height"];
+    mImageWidth = 640;
+    mImageHeight = 480;
     if(mImageWidth<1 || mImageHeight<1)
     {
         mImageWidth = 640;
@@ -97,7 +99,8 @@ void Viewer::Run()
     pangolin::OpenGlMatrix Twc;
     Twc.SetIdentity();
 
-    cv::namedWindow("DSP-SLAM: Current Frame");
+    cv::namedWindow("DSP-SLAM: Current Frame", cv::WINDOW_NORMAL);
+    cv::resizeWindow("DSP-SLAM: Current Frame", mImageWidth, mImageHeight);
 
     bool bFollow = true;
     bool bLocalizationMode = false;
