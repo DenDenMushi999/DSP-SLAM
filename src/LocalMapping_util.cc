@@ -280,19 +280,22 @@ void LocalMapping::ProcessDetectedObjects()
 
         int numKFsPassedSinceInit = int(mpCurrentKeyFrame->mnId - pMO->mpRefKF->mnId);
 
-        if (numKFsPassedSinceInit < 50)
+        if (numKFsPassedSinceInit < 80)
+        {
             // pMO->ComputeCuboidPCA(numKFsPassedSinceInit < 15);
-            pMO->ComputeCuboidPCA(numKFsPassedSinceInit < 50);
+            cout << "Recalculating object Cuboid. numKFsPassedSinceInit: " << numKFsPassedSinceInit << "\n";
+            pMO->ComputeCuboidPCA(numKFsPassedSinceInit < 80);
+        }
         else  // when we have relative good object shape
             pMO->RemoveOutliersModel();
-        // only begin to reconstruct the object if it is observed for enough amoubt of time (15 KFs)
+        // only begin to reconstruct the object if it is observed for enough amoubt of time
         // if(numKFsPassedSinceInit < 15)
-        if(numKFsPassedSinceInit < 50)
+        if(numKFsPassedSinceInit < 80)
             continue;
 
-        // if ((numKFsPassedSinceInit - 15) % 5 != 0)
-        if ((numKFsPassedSinceInit - 50) % 5 != 0)
+        if ((numKFsPassedSinceInit - 80) % 5 != 0)
             continue;
+            
 
 //        int numKFsPassedSinceLastRecon = int(mpCurrentKeyFrame->mnId) - nLastReconKFID;
 //        if (numKFsPassedSinceLastRecon  < 8)
@@ -330,6 +333,7 @@ void LocalMapping::ProcessDetectedObjects()
         // cout << "Object " << pMO->mnId << ": " << n_points << " points observed, " << "with " << n_valid_points << " valid points, and " << n_rays << " rays" << endl;
 
         // Surface points
+        cout << "SURFACE POINTS CAM: " << n_valid_points << "\n";
         if (n_valid_points >= 50 && n_rays > 20)
         {
             Eigen::MatrixXf surface_points_cam = Eigen::MatrixXf::Zero(n_valid_points, 3);
@@ -397,17 +401,33 @@ void LocalMapping::ProcessDetectedObjects()
             // cout << "Number of KF passed: " << numKFsPassedSinceInit << endl;
 
             // If not initialized, duplicate optimization to resolve orientation ambiguity
-            if (!pMO->reconstructed)
-            {
-                auto flipped_Two = pMO->Sim3Two;
-                flipped_Two.col(0) *= -1;
-                flipped_Two.col(2) *= -1;
-                auto pyMapObjectFlipped = pyOptimizer.attr("reconstruct_object")
-                        (SE3Tcw * flipped_Two, surface_points_cam, rays, depth_obs, pMO->vShapeCode);
+            // if (!pMO->reconstructed)
+            // {
+            auto flipped_y_Two = pMO->Sim3Two;
+            flipped_y_Two.col(0) *= -1;
+            flipped_y_Two.col(2) *= -1;
+            auto pyMapObjectFlipped_y = pyOptimizer.attr("reconstruct_object")
+                    (SE3Tcw * flipped_y_Two, surface_points_cam, rays, depth_obs, pMO->vShapeCode);
 
-                if (pyMapObject.attr("loss").cast<float>() > pyMapObjectFlipped.attr("loss").cast<float>())
-                    pyMapObject = pyMapObjectFlipped;
+            // auto flipped_z_Two = pMO->Sim3Two;
+            // flipped_z_Two.col(0) *= -1;
+            // flipped_z_Two.col(1) *= -1;
+            // auto pyMapObjectFlipped_z = pyOptimizer.attr("reconstruct_object")
+            //         (SE3Tcw * flipped_z_Two, surface_points_cam, rays, depth_obs, pMO->vShapeCode);
+
+            float loss_orig = pyMapObject.attr("loss").cast<float>();
+            float loss_flip_y = pyMapObjectFlipped_y.attr("loss").cast<float>();
+            // float loss_flip_z = pyMapObjectFlipped_z.attr("loss").cast<float>();
+            if (loss_orig > loss_flip_y)
+            {
+                pyMapObject = pyMapObjectFlipped_y;
+                // if (loss_flip_y > loss_flip_z)
+                //     pyMapObject = pyMapObjectFlipped_z;
+                // else
+                //     pyMapObject = pyMapObjectFlipped_y;
             }
+            
+            // }
 
             auto Sim3Tco = pyMapObject.attr("t_cam_obj").cast<Eigen::Matrix4f>();
             det->SetPoseMeasurementSim3(Sim3Tco);
