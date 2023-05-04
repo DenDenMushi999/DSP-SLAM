@@ -145,7 +145,8 @@ void Tracking::ObjectDataAssociation(KeyFrame *pKF)
         else
         {
             det->isNew = true;
-            if (det->nPts < 50)
+            // if (det->nPts < 50)
+            if (det->nPts < 100)
                 det->isGood = false;
         }
     }

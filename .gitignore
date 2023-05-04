@@ -21,6 +21,8 @@ Thirdparty/g2o/lib/
 dsp_slam
 dsp_slam_mono
 map/
+good_maps/
+masks
 create_json.py
 mask.png
 Examples/
@@ -30,3 +32,5 @@ Thirdparty/Pangolin
 Thirdparty/eigen
 Thirdparty/mmdetection3d
 Thirdparty/opencv
+
+.vscode
