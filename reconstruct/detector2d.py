@@ -78,7 +78,6 @@ class Detector2D(object):
         else:
             masks = np.stack(masks, axis=0)
         assert boxes.shape[0] == masks.shape[0]
-
         return self.get_valid_detections(boxes, masks)
 
     def visualize_result(self, image, filename):
@@ -101,7 +100,11 @@ class Detector2D(object):
 
     @staticmethod
     def save_masks(masks):
-        mask_imgs = masks.cpu().numpy()
+        assert isinstance(masks, torch.Tensor) or isinstance(masks, np.ndarray)
+        if isinstance(masks, torch.Tensor):
+            mask_imgs = masks.cpu().numpy()
+        else:
+            mask_imgs = masks
         n = mask_imgs.shape[0]
         for i in range(n):
             cv2.imwrite("mask_%d.png" % i, mask_imgs[i, ...].astype(np.float32) * 255.)

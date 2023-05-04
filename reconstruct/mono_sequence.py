@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 from pathlib import Path
+import shutil
 
 import numpy as np
 import os
@@ -23,7 +24,7 @@ import torch
 from reconstruct.loss_utils import get_rays, get_time
 from reconstruct.utils import ForceKeyErrorDict
 from reconstruct import get_detectors
-
+# from reconstruct.detector2d import visualize_result
 
 def create_dir(path):
     Path(path).mkdir(parents=True, exist_ok=True)
@@ -102,8 +103,11 @@ class Frame:
         bbox_max = bboxes_2d[max_id, ...]
 
         # cv2.imshow('detection mask', mask_max)
-        create_dir(f'map/lab_cars/11/masks')
-        cv2.imwrite(f'map/lab_cars/11/masks/' + '{:06d}_mask'.format(self.frame_id) + '.png', mask_max)
+        root_path = Path('/home/dendenmushi/ros1_ws/src/DSP-SLAM')
+        masks_path = (root_path/'masks')/(Path(self.rgb_dir).parent.name)
+        print(masks_path)
+        create_dir(masks_path)
+        cv2.imwrite( str(masks_path/('mask_{:06d}'.format(self.frame_id) + '.png')), mask_max)
 
         non_surface_pixels = self.pixels_sampler(bbox_max, mask_max.astype(np.bool8))
 
