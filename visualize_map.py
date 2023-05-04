@@ -29,7 +29,7 @@ def config_parser():
     return parser
 
 
-def set_view(vis, dist=100., theta=np.pi/6.):
+def set_view(vis, dist=10., theta=np.pi/6.):
     vis_ctr = vis.get_view_control()
     cam = vis_ctr.convert_to_pinhole_camera_parameters()
     # world to eye
