@@ -103,9 +103,11 @@ class Frame:
         bbox_max = bboxes_2d[max_id, ...]
 
         # cv2.imshow('detection mask', mask_max)
+        # SAVE MASKS
         root_path = Path('/home/dendenmushi/ros1_ws/src/DSP-SLAM')
-        masks_path = (root_path/'masks')/(Path(self.rgb_dir).parent.name)
-        print(masks_path)
+        map_path = Path('map/lab_cars/11_deblurred_30_2')
+        masks_path = (root_path/map_path/'masks')
+        # print(masks_path)
         create_dir(masks_path)
         cv2.imwrite( str(masks_path/('mask_{:06d}'.format(self.frame_id) + '.png')), mask_max)
 

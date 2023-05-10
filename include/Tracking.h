@@ -31,7 +31,7 @@
 #include"LocalMapping.h"
 #include"LoopClosing.h"
 #include"Frame.h"
-#include"DebugFrame.h"
+// #include"DebugFrame.h"
 #include "ORBVocabulary.h"
 #include"KeyFrameDatabase.h"
 #include"ORBextractor.h"

@@ -57,7 +57,7 @@ add_library(${PROJECT_NAME} SHARED
         src/Optimizer_util.cc
         src/PnPsolver.cc
         src/Frame.cc
-        src/DebugFrame.cc
+        # src/DebugFrame.cc
         src/KeyFrameDatabase.cc
         src/Sim3Solver.cc
         src/Initializer.cc

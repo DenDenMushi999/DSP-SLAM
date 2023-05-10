@@ -20,4 +20,4 @@ void DebugFrame::SetMask(const cv::Mat &mask)
     mmask = mask;
 }
 
-} //namespace OEB_SLAM2
+} //namespace ORB_SLAM2

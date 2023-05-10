@@ -22,7 +22,9 @@
 #include<chrono>
 #include<iomanip>
 
-#include<opencv2/core/core.hpp>
+#include <Eigen/Dense>
+#include <opencv2/core/eigen.hpp>
+#include <opencv2/core/core.hpp>
 
 #include"System.h"
 
@@ -97,8 +99,29 @@ int main(int argc, char **argv)
             std::this_thread::sleep_for(std::chrono::microseconds(static_cast<size_t>((T- ttrack)*1e6)));
         }
 
-//        if (SLAM.GetTrackingState() == ORB_SLAM2::Tracking::OK)
-//            SLAM.SaveMapCurrentFrame(string(argv[4]), ni);
+        if (SLAM.GetTrackingState() == ORB_SLAM2::Tracking::OK) {
+            // std::cout << string(argv[4]) + "frames" << '\n';
+
+            SLAM.SaveMapCurrentFrame(string(argv[4]) + "frames" + "/", ni);
+            
+            // py::list detections = SLAM.pySequence.attr("get_frame_by_id")(ni);
+            // py::list detections = mpSystem->pySequence.attr("get_frame_by_id")(pKF->mnFrameId);
+
+            // int num_dets = detections.size();
+
+            // for (int detected_idx = 0; detected_idx < num_dets; detected_idx++)
+            // {
+            //     stringstream ss;
+            //     ss << setfill('0') << setw(6) << ni;
+            //     auto py_det = detections[detected_idx];
+            //     auto mask = py_det.attr("mask").cast<Eigen::MatrixXf>();
+                
+            //     cv::Mat mask_cv;
+            //     cv::eigen2cv(mask, mask_cv);
+            //     std::cout << string(argv[4]) + "/" + ss.str() + "-mask.png" << '\n';
+            //     cv::imwrite(string(argv[4]) + "/" + ss.str() + "-mask.png", mask_cv);
+            // }
+        }
     }
 
     SLAM.SaveEntireMap(string(argv[4]));
