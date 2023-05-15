@@ -13,6 +13,26 @@ def frames_sort_key(fname):
     # pattern .../000123.png
     return int(re.findall(r'\d+', str(fname))[-1])
 
+def get_frame_id(fname):
+    return int(re.findall(r'\d+', str(fname))[-1])
+
+def get_frame_id_str(fname):
+    ss = re.findall(r'\d+', str(fname))[-1]
+    print(ss)
+    return ss
+
+def compare_frame_ids(frame1_path, frame2_path):
+    return get_frame_id(frame1_path) == get_frame_id(frame2_path)
+
+def get_corresp_mask(frame_path, mask_paths):
+    frame_id = get_frame_id(frame_path)
+    mask_path = list(filter(lambda path: get_frame_id(frame_path) == get_frame_id(path), mask_paths))
+    if len(mask_path):
+        return mask_path[0]
+    else:
+        return None
+
+
 def args_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--frames_dir', type=str, required=True, help='path to frames directory')
@@ -50,16 +70,39 @@ def draw_mask(image, mask, color, alpha, resize=None):
 
     return image_combined
 
+def associate_frames_and_masks(frame_paths, mask_paths):
+    assoc_frames = []
+    assoc_masks = []
+
+    for frame_path in frame_paths:
+        for mask_path in mask_paths:
+            if get_frame_id(frame_path) == get_frame_id(mask_path):
+                assoc_frames.append(frame_path)
+                assoc_masks.append(mask_path)
+
+    return assoc_frames, assoc_masks
+
 def draw_masks(frames_dir, masks_dir, save_dir):
     frame_paths = sorted(glob.glob(str(frames_dir/'*.png')), key=frames_sort_key)
-    mask_paths = sorted(glob.glob(str(frames_dir/'*.png')), key=frames_sort_key)
-    assert len(frame_paths) == len(mask_paths), f'The number of images and masks are not equal: {len(frame_paths)}, {len(mask_paths)}'
+    mask_paths = sorted(glob.glob(str(masks_dir/'*.png')), key=frames_sort_key)
+    n = min([len(frame_paths), len(mask_paths)])
+    # assert len(frame_paths) == len(mask_paths), f'The number of images and masks are not equal: {len(frame_paths)}, {len(mask_paths)}'
     
-    for frame_path, mask_path in zip(frame_paths, mask_paths):
+    # frame_paths, mask_paths = associate_frames_and_masks(frame_paths, mask_paths)
+
+    for frame_path, mask_path in zip(frame_paths[:n], mask_paths[:n]):
         frame = cv2.imread(frame_path)
-        mask = cv2.imread(mask_path)
-        frame_id = re.findall(r'\d+', str(frame_path))[-1]
+        frame_id = get_frame_id(frame_path)
+        frame_id_str = get_frame_id_str(frame_path)
         assert frame_id is not None
+
+        mask_path = get_corresp_mask(frame_path, mask_paths)
+        # if frame_id != get_frame_id(mask_path):
+        if mask_path is None:
+            cv2.imwrite(str(save_dir/(frame_id_str+'-Masked-frame.png')), frame)
+            continue
+        
+        mask = cv2.imread(mask_path)
 
         assert (frame is not None) and (mask is not None)
         assert len(frame.shape) == 3
@@ -68,14 +111,16 @@ def draw_masks(frames_dir, masks_dir, save_dir):
             mask = np.expand_dims(mask, 2).repeat(3, axis=2)
         frame_shape = frame.shape
         mask_shape = mask.shape
+        print(frame.shape, mask.shape)
         d_h = frame_shape[0] - mask_shape[0]
         d_w = frame_shape[1] - mask_shape[1]
+        print(d_h, d_w)
         assert (not d_w%2) and (not d_h%2), f'Mask has incorrect shape {frame.shape, mask.shape}'
-        if d_h and d_w:
+        if d_h or d_w:
             print('padding')
             mask = np.pad(mask, ((d_h//2,d_h//2), (d_w//2,d_w//2),(0,0)) )
-        print(mask.max())
-        cv2.imwrite(str(save_dir/(frame_id+'-Masked-frame.png')), draw_mask(frame, mask, color=(0,255,0), alpha=0.3))
+        print(frame.shape, mask.shape)
+        cv2.imwrite(str(save_dir/(frame_id_str+'-Masked-frame.png')), draw_mask(frame, mask, color=(0,255,0), alpha=0.3))
 
 if __name__ == "__main__":
 
