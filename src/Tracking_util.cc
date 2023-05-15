@@ -167,9 +167,9 @@ void Tracking::GetObjectDetectionsMono(KeyFrame *pKF)
     py::list detections = mpSystem->pySequence.attr("get_frame_by_id")(pKF->mnFrameId);
     int num_dets = detections.size();
     // No detections, return immediately
+    // std::cout << "num_dets: " << num_dets << '\n';
     if (num_dets == 0)
         return;
-
     for (int detected_idx = 0; detected_idx < num_dets; detected_idx++)
     {
         auto det = new ObjectDetection();

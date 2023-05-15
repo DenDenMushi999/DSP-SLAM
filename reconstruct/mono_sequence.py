@@ -87,7 +87,7 @@ class Frame:
             label_path2d = os.path.join(self.lbl2d_dir, "%06d.lbl" % self.frame_id)
             det_2d = torch.load(label_path2d)
         t2 = get_time()
-        print("2D detctor takes %f seconds" % (t2 - t1))
+        print("2D detector takes %f seconds" % (t2 - t1))
 
         img_h, img_w, _ = self.img_rgb.shape
         masks_2d = det_2d["pred_masks"]
@@ -95,6 +95,7 @@ class Frame:
 
         # If no 2D detections, return right away
         if masks_2d.shape[0] == 0:
+            print(f'NO DETERCTIONS in frame {self.frame_id}')
             return
 
         # For redwood and freiburg cars, we only focus on the object in the middle
@@ -102,10 +103,11 @@ class Frame:
         mask_max = masks_2d[max_id, ...].astype(np.float32) * 255.
         bbox_max = bboxes_2d[max_id, ...]
 
+        print(f'Detected in frame {self.frame_id}', )
         # cv2.imshow('detection mask', mask_max)
         # SAVE MASKS
         root_path = Path('/home/dendenmushi/ros1_ws/src/DSP-SLAM')
-        map_path = Path('map/lab_cars/11_deblurred_30_2')
+        map_path = Path('map/lab_cars/1_synth_deblurred_2')
         masks_path = (root_path/map_path/'masks')
         # print(masks_path)
         create_dir(masks_path)
