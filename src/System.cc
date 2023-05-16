@@ -37,7 +37,7 @@ bool has_suffix(const std::string &str, const std::string &suffix) {
 namespace ORB_SLAM2
 {
 
-System::System(const string &strVocFile, const string &strSettingsFile, const string &strSequencePath,
+System::System(const string &strVocFile, const string &strSettingsFile, const string &strSequencePath, const string &strSavePath,
                const eSensor sensor) :
                mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)),
                mbReset(false),mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false)
@@ -95,7 +95,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const st
     string pyCfgPath = fSettings["DetectorConfigPath"].string();
     pyCfg = io_utils.attr("get_configs")(pyCfgPath);
     pyDecoder = io_utils.attr("get_decoder")(pyCfg);
-    pySequence = py::module::import("reconstruct").attr("get_sequence")(strSequencePath, pyCfg);
+    pySequence = py::module::import("reconstruct").attr("get_sequence")(strSequencePath, strSavePath, pyCfg);
     InitThread();
 
     //Create KeyFrame Database

@@ -28,13 +28,14 @@ from reconstruct import get_detectors
 
 def create_dir(path):
     Path(path).mkdir(parents=True, exist_ok=True)
-
+    
 
 class Frame:
     def __init__(self, sequence, frame_id):
         # Load sequence properties
         self.configs = sequence.configs
         self.rgb_dir = sequence.rgb_dir
+        self.save_dir = sequence.save_dir
         self.lbl2d_dir = sequence.lbl2d_dir
         self.K = sequence.K_cam
         self.invK = sequence.invK_cam
@@ -104,14 +105,11 @@ class Frame:
         bbox_max = bboxes_2d[max_id, ...]
 
         print(f'Detected in frame {self.frame_id}', )
-        # cv2.imshow('detection mask', mask_max)
         # SAVE MASKS
-        root_path = Path('/home/dendenmushi/ros1_ws/src/DSP-SLAM')
-        map_path = Path('map/lab_cars/1_synth_deblurred_2')
-        masks_path = (root_path/map_path/'masks')
-        # print(masks_path)
+        masks_path = self.save_dir/'masks'
+        
         create_dir(masks_path)
-        cv2.imwrite( str(masks_path/('mask_{:06d}'.format(self.frame_id) + '.png')), mask_max)
+        cv2.imwrite( str(masks_path/('{:06d}'.format(self.frame_id) + '-Mask.png')), mask_max)
 
         non_surface_pixels = self.pixels_sampler(bbox_max, mask_max.astype(np.bool8))
 
@@ -132,9 +130,10 @@ class Frame:
 
 
 class MonoSequence:
-    def __init__(self, data_dir, configs):
+    def __init__(self, data_dir, save_dir, configs):
         self.root_dir = data_dir
         self.rgb_dir = os.path.join(data_dir, "image_0")
+        self.save_dir = Path(save_dir)
 
         # Get camera intrinsics
         fs = cv2.FileStorage(configs.slam_config_path, cv2.FILE_STORAGE_READ)

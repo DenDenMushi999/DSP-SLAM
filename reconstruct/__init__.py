@@ -13,11 +13,11 @@ def get_detectors(configs):
             return None
 
 
-def get_sequence(data_dir, configs):
+def get_sequence(data_dir, save_dir, configs):
     if configs.data_type == "KITTI":
         from .kitti_sequence import KITIISequence
         return KITIISequence(data_dir, configs)
     # We use a single class for Redwood and Freiburg sequence
     if configs.data_type == "Redwood" or configs.data_type == "Freiburg":
         from .mono_sequence import MonoSequence
-        return MonoSequence(data_dir, configs)
+        return MonoSequence(data_dir, save_dir, configs)

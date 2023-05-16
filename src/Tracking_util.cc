@@ -178,7 +178,6 @@ void Tracking::GetObjectDetectionsMono(KeyFrame *pKF)
         auto mask = py_det.attr("mask").cast<Eigen::MatrixXf>();
         cv::Mat mask_cv;
         cv::eigen2cv(mask, mask_cv);
-        // cv::imwrite("mask.png", mask_cv);
         cv::Mat mask_erro = mask_cv.clone();
         cv::Mat kernel = getStructuringElement(cv::MORPH_ELLIPSE,
                                                cv::Size(2 * maskErrosion + 1, 2 * maskErrosion + 1),
