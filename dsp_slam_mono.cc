@@ -22,6 +22,10 @@
 #include<chrono>
 #include<iomanip>
 
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include <Eigen/Dense>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/core/core.hpp>
@@ -64,6 +68,21 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat im;
+    const char* save_path = argv[4];
+    const char* image_folder_name = "frames/";
+    const int name_len = strlen(save_path) + strlen(image_folder_name) + 1;
+    char *save_frames_path = new char[name_len];
+    // char* save_frames_path = save_path + image_folder_name; 
+    
+    strcpy(save_frames_path, save_path);
+    strcat(save_frames_path, image_folder_name);
+    
+    if (mkdir(argv[4], 0777) != -1)
+        cout << "Map Directory created";
+    if (mkdir(save_frames_path, 0777) != -1)
+        cout << "Frames Directory created";
+    
+
     for(int ni = 0; ni < nImages; ni++)
     {
         // Read image from file
@@ -102,7 +121,7 @@ int main(int argc, char **argv)
         if (SLAM.GetTrackingState() == ORB_SLAM2::Tracking::OK) {
             // std::cout << string(argv[4]) + "frames" << '\n';
 
-            SLAM.SaveMapCurrentFrame(string(argv[4]) + "frames" + "/", ni);
+            SLAM.SaveMapCurrentFrame(save_frames_path, ni);
             
             // py::list detections = SLAM.pySequence.attr("get_frame_by_id")(ni);
             // py::list detections = mpSystem->pySequence.attr("get_frame_by_id")(pKF->mnFrameId);
