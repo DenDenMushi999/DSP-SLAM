@@ -1,5 +1,6 @@
 cmake-build-debug/
 cmake-build-release/
+CMakeFiles/
 build/
 reconstruct/.ipynb_checkpoints/
 reconstruct/__pycache__/
@@ -22,7 +23,8 @@ dsp_slam
 dsp_slam_mono
 map/
 example_maps/
-masks
+masks/
+configs/
 create_json.py
 mask.png
 Examples/
